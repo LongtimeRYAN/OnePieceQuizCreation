@@ -57,8 +57,6 @@ def load_questions_from_file(arc_name: str):
     # script_dir = r"C:\Users\Ryan\Desktop\Code\OnePieceQuiz"  # Your folder path
     script_dir = os.path.dirname(os.path.abspath(__file__))  # This gets the current directory of the script
 
-    st.error(script_dir)
-
     # Construct the full file path
     logger.info(str(arc_name))
 
@@ -124,9 +122,9 @@ def main():
     elif st.session_state.selected_arc is None:
         display_arc_selection()
     
-    if 'questions_initialized' not in st.session_state:
-        st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
-        st.session_state.questions_initialized = True
+    # if 'questions_initialized' not in st.session_state:
+    #     st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
+    #     st.session_state.questions_initialized = True
 
     if st.session_state.finished:
         display_end_screen(st.session_state.game)
@@ -164,13 +162,16 @@ def display_arc_selection():
         st.session_state.quiz_started = True
         st.session_state.questions_initialized = False  # To ensure questions are initialized only once
         st.rerun()
+    
+    if 'questions_initialized' not in st.session_state:
+        st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
+        st.session_state.questions_initialized = True
 
 
 def render_quiz(game):
     total_questions = len(game.questions)
     
     if total_questions == 0:
-        st.error(os.path.dirname(os.path.abspath(__file__)))
         return  # Stop rendering if there are no questions
     
     # Calculate progress
