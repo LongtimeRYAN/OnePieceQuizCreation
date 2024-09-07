@@ -17,3 +17,15 @@ A simple Streamlit app template for you to modify!
    ```
    $ streamlit run streamlit_app.py
    ```
+
+
+### Setup with Poetry
+install
+```
+poetry install
+```
+
+### Run server with Makefile
+```
+make server
+```
