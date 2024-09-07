@@ -1,6 +1,16 @@
-import streamlit as st
 import json
 import os
+
+import streamlit as st
+
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    handlers=[logging.StreamHandler()])
+
+logger = logging.getLogger(__name__)
 
 class TriviaGame:
     def __init__(self):
@@ -36,7 +46,7 @@ class TriviaGame:
             self.add_question(question, answer)
 
 
-def load_questions_from_file(arc_name):
+def load_questions_from_file(arc_name: str):
     # Mapping arc names to JSON file names
     arc_file_mapping = {
         "Arlong Park": "arlong_park.json",
@@ -44,10 +54,15 @@ def load_questions_from_file(arc_name):
     }
 
     # Get the correct directory of the script (absolute path)
-    script_dir = r"C:\Users\Ryan\Desktop\Code\OnePieceQuiz"  # Your folder path
-    
+    # script_dir = r"C:\Users\Ryan\Desktop\Code\OnePieceQuiz"  # Your folder path
+    script_dir = os.path.dirname(os.path.abspath(__file__))  # This gets the current directory of the script
+
+    st.error(script_dir)
+
     # Construct the full file path
-    file_path = os.path.join(script_dir, arc_file_mapping.get(arc_name, None))
+    logger.info(str(arc_name))
+
+    file_path = os.path.join(script_dir, arc_file_mapping[arc_name])
     
     # Debugging: Show the file path and check if it exists
     st.write(f"Attempting to load questions from file: {file_path}")
@@ -56,7 +71,7 @@ def load_questions_from_file(arc_name):
 
     # If the file doesn't exist, return an empty list
     if not file_exists:
-        st.error(f"No questions found for the arc: {arc_name}")
+        st.error(f"No questions found for the arc: {arc_name} {script_dir}")
         return []
 
     # Try loading the file, catch any issues
@@ -77,8 +92,8 @@ def initialize_questions(game, arc_name):
     # Load questions from JSON file
     questions = load_questions_from_file(arc_name)
     for q in questions:
-        game.add_question(q['question'], q['answer']) 
-        return game 
+        game.add_question(q['question'], q['answer'])
+        return game
 
 def main():
     # Initialize session state variables for the quiz
@@ -108,15 +123,24 @@ def main():
         display_start_screen()
     elif st.session_state.selected_arc is None:
         display_arc_selection()
-    else:
-        if 'questions_initialized' not in st.session_state:
-            st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
-            st.session_state.questions_initialized = True
+    
+    if 'questions_initialized' not in st.session_state:
+        st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
+        st.session_state.questions_initialized = True
 
-        if st.session_state.finished:
-            display_end_screen(st.session_state.game)
-        else:
-            render_quiz(st.session_state.game)
+    if st.session_state.finished:
+        display_end_screen(st.session_state.game)
+    else:
+        render_quiz(st.session_state.game)
+    # else:
+    #     if 'questions_initialized' not in st.session_state:
+    #         st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
+    #         st.session_state.questions_initialized = True
+
+    #     if st.session_state.finished:
+    #         display_end_screen(st.session_state.game)
+    #     else:
+    #         render_quiz(st.session_state.game)
 
 def display_start_screen():
     st.markdown("<h1 style='text-align: center;'>THE ULTIMATE ONE PIECE QUIZ</h1>", unsafe_allow_html=True)
@@ -129,7 +153,11 @@ def display_start_screen():
 def display_arc_selection():
     st.markdown("<h2 style='text-align: center;'>Select an Arc:</h2>", unsafe_allow_html=True)
     arcs = ["Arlong Park", "Syrup Village"]  # Add more arcs as needed
-    selected_arc = st.selectbox("", arcs)
+    # selected_arc = st.selectbox("", arcs)
+    selected_arc = st.selectbox("Choose an arc", arcs, index=arcs.index(st.session_state.selected_arc) if st.session_state.selected_arc in arcs else 0)
+
+    # logger.info(selected_arc)
+    st.session_state.selected_arc = selected_arc
 
     if st.button("Start Quiz"):
         st.session_state.selected_arc = selected_arc
@@ -137,11 +165,12 @@ def display_arc_selection():
         st.session_state.questions_initialized = False  # To ensure questions are initialized only once
         st.rerun()
 
+
 def render_quiz(game):
     total_questions = len(game.questions)
     
     if total_questions == 0:
-        st.error("No questions available for the selected arc.")
+        st.error(os.path.dirname(os.path.abspath(__file__)))
         return  # Stop rendering if there are no questions
     
     # Calculate progress
