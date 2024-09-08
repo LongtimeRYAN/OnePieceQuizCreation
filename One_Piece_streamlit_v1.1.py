@@ -126,6 +126,13 @@ def main():
     #     st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
     #     st.session_state.questions_initialized = True
 
+    if (
+        'questions_initialized' not in st.session_state
+        and st.session_state.selected_arc is not None
+    ):
+        st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
+        st.session_state.questions_initialized = True
+
     if st.session_state.finished:
         display_end_screen(st.session_state.game)
     else:
@@ -148,14 +155,25 @@ def display_start_screen():
         st.session_state.quiz_started = True
         st.rerun()
 
+def update_selected_arc():
+    # st.session_state.selected_arc = arc
+    st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
+    st.session_state.questions_initialized = True
+
+
 def display_arc_selection():
     st.markdown("<h2 style='text-align: center;'>Select an Arc:</h2>", unsafe_allow_html=True)
     arcs = ["Arlong Park", "Syrup Village"]  # Add more arcs as needed
-    # selected_arc = st.selectbox("", arcs)
-    selected_arc = st.selectbox("Choose an arc", arcs, index=arcs.index(st.session_state.selected_arc) if st.session_state.selected_arc in arcs else 0)
+    selected_arc = st.selectbox(
+        label="Select an arc", 
+        options=arcs,
+        on_change=update_selected_arc,
+    )
+    st.session_state.selected_arc = selected_arc
+    logger.info(selected_arc)
 
     # logger.info(selected_arc)
-    st.session_state.selected_arc = selected_arc
+    # st.session_state.selected_arc = selected_arc
 
     if st.button("Start Quiz"):
         st.session_state.selected_arc = selected_arc
@@ -163,9 +181,12 @@ def display_arc_selection():
         st.session_state.questions_initialized = False  # To ensure questions are initialized only once
         st.rerun()
     
-    if 'questions_initialized' not in st.session_state:
-        st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
-        st.session_state.questions_initialized = True
+    # if (
+    #     'questions_initialized' not in st.session_state
+    #     and st.session_state.selected_arc is not None
+    # ):
+    #     st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
+    #     st.session_state.questions_initialized = True
 
 
 def render_quiz(game):
