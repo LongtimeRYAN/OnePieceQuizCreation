@@ -138,18 +138,30 @@ def display_start_screen():
         st.session_state.selected_arc = None  # Reset selected arc when starting new quiz
         st.rerun()
 
+def reset_on_arc_change():
+    st.session_state.questions_initialized = False
+
 def display_arc_selection():
     st.markdown("<h2 style='text-align: center;'>Select an Arc:</h2>", unsafe_allow_html=True)
     arcs = ["Arlong Park", "Syrup Village"]
-    selected_arc = st.selectbox("Choose an arc", arcs)
+    selected_arc = st.selectbox(
+        label="Choose an arc",
+        options=arcs,
+        index=None,
+        on_change=reset_on_arc_change,
+        key="arc_selection"
+    )
 
     # Log the selected arc to confirm it's correct
     logger.info(f"Arc selected: {selected_arc}")
     st.write(f"Selected arc: {selected_arc}")
 
-    st.session_state.selected_arc = selected_arc
+    # st.session_state.selected_arc = selected_arc
 
     if st.button("Start Quiz"):
+        st.session_state.selected_arc = selected_arc
+
+
         # Reset game and session state when starting a new quiz
         st.session_state.game = TriviaGame()
         st.session_state.quiz_started = True
