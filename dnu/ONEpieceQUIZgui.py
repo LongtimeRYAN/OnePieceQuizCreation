@@ -8,6 +8,7 @@ Created on Wed Aug 28 13:56:59 2024
 import tkinter as tk
 from tkinter import messagebox
 
+
 class TriviaGameGUI:
     def __init__(self, root):
         self.root = root
@@ -34,9 +35,16 @@ class TriviaGameGUI:
         self.score_label.pack(pady=10)
 
         # Add your questions here
-        self.add_question("What was the first ever named attack used by Luffy?", ["pistol"])
-        self.add_question("What did Don Krieg want to steal from Red Leg Zeff specifically? Not his Restaurant", ["log", "grand", "line"])
-        self.add_question("How did Dorry trap Luffy on Little Garden?", ["skeleton", "cave"])
+        self.add_question(
+            "What was the first ever named attack used by Luffy?", ["pistol"]
+        )
+        self.add_question(
+            "What did Don Krieg want to steal from Red Leg Zeff specifically? Not his Restaurant",
+            ["log", "grand", "line"],
+        )
+        self.add_question(
+            "How did Dorry trap Luffy on Little Garden?", ["skeleton", "cave"]
+        )
 
         self.display_question()
 
@@ -63,7 +71,9 @@ class TriviaGameGUI:
         answer = self.answer_entry.get().strip().lower()
         answer_words = answer.split()
 
-        if any(keyword in answer_words for keyword in self.keywords[self.current_question]):
+        if any(
+            keyword in answer_words for keyword in self.keywords[self.current_question]
+        ):
             self.result_label.config(text="Correct!", fg="green")
             self.score += 1
         else:
@@ -75,13 +85,17 @@ class TriviaGameGUI:
 
     def end_quiz(self):
         """Display final score and end the quiz."""
-        messagebox.showinfo("Quiz Completed", f"Your final score is: {self.score}/{len(self.questions)}")
+        messagebox.showinfo(
+            "Quiz Completed", f"Your final score is: {self.score}/{len(self.questions)}"
+        )
         self.root.quit()
+
 
 def main():
     root = tk.Tk()
     app = TriviaGameGUI(root)
     root.mainloop()
+
 
 if __name__ == "__main__":
     main()

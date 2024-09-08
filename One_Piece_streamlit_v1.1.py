@@ -6,11 +6,14 @@ import streamlit as st
 import logging
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    handlers=[logging.StreamHandler()])
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler()],
+)
 
 logger = logging.getLogger(__name__)
+
 
 class TriviaGame:
     def __init__(self):
@@ -50,18 +53,20 @@ def load_questions_from_file(arc_name: str):
     # Mapping arc names to JSON file names
     arc_file_mapping = {
         "Arlong Park": "arlong_park.json",
-        "Syrup Village": "syrup_village.json"
+        "Syrup Village": "syrup_village.json",
     }
 
     # Get the correct directory of the script (absolute path)
     # script_dir = r"C:\Users\Ryan\Desktop\Code\OnePieceQuiz"  # Your folder path
-    script_dir = os.path.dirname(os.path.abspath(__file__))  # This gets the current directory of the script
+    script_dir = os.path.dirname(
+        os.path.abspath(__file__)
+    )  # This gets the current directory of the script
 
     # Construct the full file path
     logger.info(str(arc_name))
 
     file_path = os.path.join(script_dir, arc_file_mapping[arc_name])
-    
+
     # Debugging: Show the file path and check if it exists
     st.write(f"Attempting to load questions from file: {file_path}")
     file_exists = os.path.exists(file_path)
@@ -74,7 +79,7 @@ def load_questions_from_file(arc_name: str):
 
     # Try loading the file, catch any issues
     try:
-        with open(file_path, 'r') as f:
+        with open(file_path, "r") as f:
             data = json.load(f)
             print(f"Loaded data from {arc_name}: {data}")  # Print full JSON data
     except Exception as e:
@@ -86,34 +91,36 @@ def load_questions_from_file(arc_name: str):
     st.write(f"Questions loaded for {arc_name}: {questions}")
     return questions
 
+
 def initialize_questions(game, arc_name):
     # Load questions from JSON file
     questions = load_questions_from_file(arc_name)
     for q in questions:
-        game.add_question(q['question'], q['answer'])
+        game.add_question(q["question"], q["answer"])
         return game
+
 
 def main():
     # Initialize session state variables for the quiz
-    if 'quiz_started' not in st.session_state:
+    if "quiz_started" not in st.session_state:
         st.session_state.quiz_started = False
-    if 'current_question' not in st.session_state:
+    if "current_question" not in st.session_state:
         st.session_state.current_question = 0
-    if 'finished' not in st.session_state:
+    if "finished" not in st.session_state:
         st.session_state.finished = False
-    if 'answer_submitted' not in st.session_state:
+    if "answer_submitted" not in st.session_state:
         st.session_state.answer_submitted = False
-    if 'correct_clicked' not in st.session_state:
+    if "correct_clicked" not in st.session_state:
         st.session_state.correct_clicked = False
-    if 'incorrect_clicked' not in st.session_state:
+    if "incorrect_clicked" not in st.session_state:
         st.session_state.incorrect_clicked = False
 
     # Initialize session state for selected arc
-    if 'selected_arc' not in st.session_state:
+    if "selected_arc" not in st.session_state:
         st.session_state.selected_arc = None
 
     # Initialize the game object if not already initialized
-    if 'game' not in st.session_state:
+    if "game" not in st.session_state:
         st.session_state.game = TriviaGame()
 
     # Arc selection or all questions quiz rendering logic
@@ -121,16 +128,18 @@ def main():
         display_start_screen()
     elif st.session_state.selected_arc is None:
         display_arc_selection()
-    
+
     # if 'questions_initialized' not in st.session_state:
     #     st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
     #     st.session_state.questions_initialized = True
 
     if (
-        'questions_initialized' not in st.session_state
+        "questions_initialized" not in st.session_state
         and st.session_state.selected_arc is not None
     ):
-        st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
+        st.session_state.game = initialize_questions(
+            st.session_state.game, st.session_state.selected_arc
+        )
         st.session_state.questions_initialized = True
 
     if st.session_state.finished:
@@ -147,25 +156,36 @@ def main():
     #     else:
     #         render_quiz(st.session_state.game)
 
+
 def display_start_screen():
-    st.markdown("<h1 style='text-align: center;'>THE ULTIMATE ONE PIECE QUIZ</h1>", unsafe_allow_html=True)
-    st.write("Test your knowledge of the entire One Piece series. Do you remember every chapter by heart? Are you a real fan? Or are you fake?")
+    st.markdown(
+        "<h1 style='text-align: center;'>THE ULTIMATE ONE PIECE QUIZ</h1>",
+        unsafe_allow_html=True,
+    )
+    st.write(
+        "Test your knowledge of the entire One Piece series. Do you remember every chapter by heart? Are you a real fan? Or are you fake?"
+    )
 
     if st.button("Begin Quiz"):
         st.session_state.quiz_started = True
         st.rerun()
 
+
 def update_selected_arc():
     # st.session_state.selected_arc = arc
-    st.session_state.game = initialize_questions(st.session_state.game, st.session_state.selected_arc)
+    st.session_state.game = initialize_questions(
+        st.session_state.game, st.session_state.selected_arc
+    )
     st.session_state.questions_initialized = True
 
 
 def display_arc_selection():
-    st.markdown("<h2 style='text-align: center;'>Select an Arc:</h2>", unsafe_allow_html=True)
+    st.markdown(
+        "<h2 style='text-align: center;'>Select an Arc:</h2>", unsafe_allow_html=True
+    )
     arcs = ["Arlong Park", "Syrup Village"]  # Add more arcs as needed
     selected_arc = st.selectbox(
-        label="Select an arc", 
+        label="Select an arc",
         options=arcs,
         on_change=update_selected_arc,
     )
@@ -178,9 +198,11 @@ def display_arc_selection():
     if st.button("Start Quiz"):
         st.session_state.selected_arc = selected_arc
         st.session_state.quiz_started = True
-        st.session_state.questions_initialized = False  # To ensure questions are initialized only once
+        st.session_state.questions_initialized = (
+            False  # To ensure questions are initialized only once
+        )
         st.rerun()
-    
+
     # if (
     #     'questions_initialized' not in st.session_state
     #     and st.session_state.selected_arc is not None
@@ -191,10 +213,10 @@ def display_arc_selection():
 
 def render_quiz(game):
     total_questions = len(game.questions)
-    
+
     if total_questions == 0:
         return  # Stop rendering if there are no questions
-    
+
     # Calculate progress
     progress = (st.session_state.current_question + 1) / total_questions
     st.progress(progress)
@@ -206,7 +228,9 @@ def render_quiz(game):
         st.write(question)
 
         # Input and answer buttons
-        answer = st.text_input("Your answer:", key=f'input_answer_{st.session_state.current_question}')
+        answer = st.text_input(
+            "Your answer:", key=f"input_answer_{st.session_state.current_question}"
+        )
 
         col1, col2, col3 = st.columns(3)
 
@@ -217,14 +241,18 @@ def render_quiz(game):
                 st.session_state.answer_submitted = True
 
         with col2:
-            if st.session_state.answer_submitted and not (st.session_state.correct_clicked or st.session_state.incorrect_clicked):
+            if st.session_state.answer_submitted and not (
+                st.session_state.correct_clicked or st.session_state.incorrect_clicked
+            ):
                 if st.button("Correct"):
                     game.score += 1
                     game.correct_count += 1
                     st.session_state.correct_clicked = True
 
         with col3:
-            if st.session_state.answer_submitted and not (st.session_state.correct_clicked or st.session_state.incorrect_clicked):
+            if st.session_state.answer_submitted and not (
+                st.session_state.correct_clicked or st.session_state.incorrect_clicked
+            ):
                 if st.button("Incorrect"):
                     game.incorrect_count += 1
                     st.session_state.incorrect_clicked = True
@@ -236,7 +264,7 @@ def render_quiz(game):
                 if not game.has_more_questions():
                     st.session_state.finished = True
                 st.session_state.answer_submitted = False
-                st.session_state.correct_clicked = False 
+                st.session_state.correct_clicked = False
                 st.session_state.incorrect_clicked = False
                 st.rerun()
 
@@ -249,6 +277,7 @@ def render_quiz(game):
         percentage_correct = (game.correct_count / total_answered) * 100
         st.write(f"Percentage Correct: {percentage_correct:.1f}%")
 
+
 def display_end_screen(game):
     st.header("Quiz Completed!")
     st.write(f"Your final score is: {game.score}/{len(game.questions)}")
@@ -259,7 +288,9 @@ def display_end_screen(game):
     total_answered = game.correct_count + game.incorrect_count
     if total_questions > 0:
         percentage_correct = (game.correct_count / total_questions) * 100
-        st.write(f"Percentage Correct: {percentage_correct:.1f}% ({game.correct_count}/{total_questions})")
+        st.write(
+            f"Percentage Correct: {percentage_correct:.1f}% ({game.correct_count}/{total_questions})"
+        )
 
         # Customize messages based on the score
         if percentage_correct == 100:
@@ -269,13 +300,14 @@ def display_end_screen(game):
         elif 70 <= percentage_correct < 90:
             st.write("💥 Supernova!")
         else:
-            st.write("😞 Better luck next time!") 
+            st.write("😞 Better luck next time!")
 
     # Option to restart the quiz
     if st.button("Restart Quiz"):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
+
 
 # Initialize the TriviaGame and start the quiz
 if __name__ == "__main__":

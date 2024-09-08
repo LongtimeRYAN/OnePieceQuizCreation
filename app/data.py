@@ -1,11 +1,18 @@
 import os
 import json
 
+import streamlit as st
+
+from logger import get_logger
+
+logger = get_logger("data-loader")
+
+
 def load_questions_from_file(arc_name: str):
     # Mapping arc names to JSON file names
     arc_file_mapping = {
         "Arlong Park": "arlong_park.json",
-        "Syrup Village": "syrup_village.json"
+        "Syrup Village": "syrup_village.json",
     }
 
     # Get the correct directory of the script (absolute path)
@@ -16,7 +23,7 @@ def load_questions_from_file(arc_name: str):
 
     # Construct the full file path
     file_path = os.path.join(script_dir, arc_file_mapping[arc_name])
-    
+
     # Debugging: Show the file path and check if it exists
     st.write(f"Attempting to load questions from file: {file_path}")
     file_exists = os.path.exists(file_path)
@@ -30,9 +37,9 @@ def load_questions_from_file(arc_name: str):
 
     # Try loading the file, catch any issues
     try:
-        with open(file_path, 'r') as f:
+        with open(file_path, "r") as f:
             data = json.load(f)
-            logging.info(f"Loaded data from {arc_name}: {data}")  # Log loaded data
+            logger.info(f"Loaded data from {arc_name}: {data}")  # Log loaded data
     except Exception as e:
         st.error(f"Error reading file: {e}")
         logger.error(f"Error reading file for {arc_name}: {e}")

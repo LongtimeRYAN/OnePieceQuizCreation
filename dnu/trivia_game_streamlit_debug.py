@@ -1,5 +1,6 @@
 import streamlit as st
 
+
 class TriviaGame:
     def __init__(self):
         self.questions = []
@@ -12,7 +13,10 @@ class TriviaGame:
 
     def check_answer(self, answer):
         answer_words = answer.strip().lower().split()
-        if any(keyword in answer_words for keyword in self.keywords[st.session_state.current_question]):
+        if any(
+            keyword in answer_words
+            for keyword in self.keywords[st.session_state.current_question]
+        ):
             self.score += 1
             return True
         return False
@@ -25,24 +29,29 @@ class TriviaGame:
             return self.questions[st.session_state.current_question]
         return None
 
+
 def main():
     st.title("One Piece Trivia Quiz")
     st.write("Test your One Piece knowledge!")
 
     # Initialize session state
-    if 'game' not in st.session_state:
+    if "game" not in st.session_state:
         st.session_state.game = TriviaGame()
         st.session_state.feedback = None
         st.session_state.answer_submitted = False
         st.session_state.current_question = 0
         st.session_state.finished = False
-        
+
         st.session_state.game.add_question(
-            "What was the first ever named attack used by Luffy?", ["pistol"])
+            "What was the first ever named attack used by Luffy?", ["pistol"]
+        )
         st.session_state.game.add_question(
-            "What did Don Krieg want to steal from Red Leg Zeff specifically? Not his Restaurant", ["log", "grand", "line"])
+            "What did Don Krieg want to steal from Red Leg Zeff specifically? Not his Restaurant",
+            ["log", "grand", "line"],
+        )
         st.session_state.game.add_question(
-            "How did Dorry trap Luffy on Little Garden?", ["skeleton", "cave"])
+            "How did Dorry trap Luffy on Little Garden?", ["skeleton", "cave"]
+        )
 
     game = st.session_state.game
 
@@ -63,6 +72,7 @@ def main():
     else:
         render_quiz(game)
 
+
 def render_quiz(game):
     progress = st.session_state.current_question / len(game.questions)
     st.progress(progress)
@@ -72,7 +82,9 @@ def render_quiz(game):
         st.header(f"Question {st.session_state.current_question + 1}")
         st.write(question)
 
-        answer = st.text_input("Your answer:", key=f'input_answer_{st.session_state.current_question}')
+        answer = st.text_input(
+            "Your answer:", key=f"input_answer_{st.session_state.current_question}"
+        )
 
         if st.button("Submit Answer") and not st.session_state.answer_submitted:
             if answer:
@@ -80,9 +92,13 @@ def render_quiz(game):
                 if correct:
                     st.session_state.feedback = "✅ Correct!"
                 else:
-                    correct_keywords = ", ".join(game.keywords[st.session_state.current_question])
-                    st.session_state.feedback = f"❌ Incorrect! Acceptable answers include: {correct_keywords}."
-                
+                    correct_keywords = ", ".join(
+                        game.keywords[st.session_state.current_question]
+                    )
+                    st.session_state.feedback = (
+                        f"❌ Incorrect! Acceptable answers include: {correct_keywords}."
+                    )
+
                 st.session_state.answer_submitted = True
 
         if st.session_state.answer_submitted:
@@ -92,6 +108,7 @@ def render_quiz(game):
                 st.session_state.current_question += 1
                 st.session_state.answer_submitted = False
                 st.session_state.feedback = None
+
 
 # Run the application
 if __name__ == "__main__":

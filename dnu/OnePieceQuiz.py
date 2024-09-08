@@ -5,6 +5,7 @@ Created on Wed Aug 28 13:43:57 2024
 @author: Ryan
 """
 
+
 class TriviaGame:
     def __init__(self):
         self.questions = []
@@ -39,16 +40,23 @@ class TriviaGame:
 
         print(f"\nYour final score is: {self.score}/{len(self.questions)}")
 
+
 def main():
     game = TriviaGame()
 
     # Example of adding questions and associated keywords
     game.add_question("What was the first ever named attack used by Luffy?", ["pistol"])
-    game.add_question("What did Don Krieg want to steal from Red Leg Zeff specifically? Not his Restaurant", ["log", "grand", "line"])
-    game.add_question("How did Dorry trap Luffy on Little Garden?", ["skeleton", "cave"])
+    game.add_question(
+        "What did Don Krieg want to steal from Red Leg Zeff specifically? Not his Restaurant",
+        ["log", "grand", "line"],
+    )
+    game.add_question(
+        "How did Dorry trap Luffy on Little Garden?", ["skeleton", "cave"]
+    )
 
     # Start the game
     game.ask_questions()
+
 
 if __name__ == "__main__":
     main()
