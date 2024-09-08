@@ -2,6 +2,7 @@
 
 import streamlit as st
 
+
 class TriviaGame:
     def __init__(self):
         self.questions = []
@@ -27,7 +28,9 @@ class TriviaGame:
         :return: bool, True if correct, False otherwise
         """
         answer_words = answer.strip().lower().split()
-        if any(keyword in answer_words for keyword in self.keywords[self.current_question]):
+        if any(
+            keyword in answer_words for keyword in self.keywords[self.current_question]
+        ):
             self.score += 1
             return True
         return False
@@ -43,30 +46,35 @@ class TriviaGame:
     def next_question(self):
         self.current_question += 1
 
+
 def main():
     st.title("One Piece Trivia Quiz")
     st.write("Test your One Piece knowledge!")
 
     # Initialize the game in session state
-    if 'game' not in st.session_state:
+    if "game" not in st.session_state:
         st.session_state.game = TriviaGame()
         # Add questions
         st.session_state.game.add_question(
-            "What was the first ever named attack used by Luffy?", ["pistol"])
+            "What was the first ever named attack used by Luffy?", ["pistol"]
+        )
         st.session_state.game.add_question(
-            "What did Don Krieg want to steal from Red Leg Zeff specifically? Not his Restaurant", ["log", "grand", "line"])
+            "What did Don Krieg want to steal from Red Leg Zeff specifically? Not his Restaurant",
+            ["log", "grand", "line"],
+        )
         st.session_state.game.add_question(
-            "How did Dorry trap Luffy on Little Garden?", ["skeleton", "cave"])
+            "How did Dorry trap Luffy on Little Garden?", ["skeleton", "cave"]
+        )
 
     game = st.session_state.game
 
     # Initialize user's answer in session state
-    if 'answer' not in st.session_state:
-        st.session_state.answer = ''
+    if "answer" not in st.session_state:
+        st.session_state.answer = ""
 
     # Initialize feedback in session state
-    if 'feedback' not in st.session_state:
-        st.session_state.feedback = ''
+    if "feedback" not in st.session_state:
+        st.session_state.feedback = ""
 
     # Display current question
     if game.has_more_questions():
@@ -74,7 +82,7 @@ def main():
         st.header(f"Question {game.current_question + 1}")
         st.write(question)
         # Input for the answer
-        st.session_state.answer = st.text_input("Your answer:", key='input_answer')
+        st.session_state.answer = st.text_input("Your answer:", key="input_answer")
 
         # Button to submit the answer
         if st.button("Submit Answer"):
@@ -84,7 +92,9 @@ def main():
                     st.session_state.feedback = "✅ Correct!"
                 else:
                     correct_keywords = ", ".join(game.keywords[game.current_question])
-                    st.session_state.feedback = f"❌ Incorrect! Acceptable answers include: {correct_keywords}."
+                    st.session_state.feedback = (
+                        f"❌ Incorrect! Acceptable answers include: {correct_keywords}."
+                    )
                 # Move to the next question after a short delay
                 game.next_question()
             else:
@@ -103,12 +113,17 @@ def main():
             game = st.session_state.game
             # Re-add questions
             game.add_question(
-                "What was the first ever named attack used by Luffy?", ["pistol"])
+                "What was the first ever named attack used by Luffy?", ["pistol"]
+            )
             game.add_question(
-                "What did Don Krieg want to steal from Red Leg Zeff specifically? Not his Restaurant", ["log", "grand", "line"])
+                "What did Don Krieg want to steal from Red Leg Zeff specifically? Not his Restaurant",
+                ["log", "grand", "line"],
+            )
             game.add_question(
-                "How did Dorry trap Luffy on Little Garden?", ["skeleton", "cave"])
+                "How did Dorry trap Luffy on Little Garden?", ["skeleton", "cave"]
+            )
             st.experimental_rerun()
+
 
 if __name__ == "__main__":
     main()
